@@ -29,7 +29,8 @@ public class FileMap implements Serializable, Map<String,NoteList> {
     public boolean load() {
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DBNAME));
-            Map<String, NoteList> tmap = (Map<String, NoteList>) ois.readObject();
+            @SuppressWarnings("unchecked")
+			Map<String, NoteList> tmap = (Map<String, NoteList>) ois.readObject();
             if (tmap != null) {
                 this.hashmap = tmap;
             }
@@ -102,14 +103,14 @@ public class FileMap implements Serializable, Map<String,NoteList> {
     }
 
     public NoteList put(String key, NoteList value) {
-        return hashmap.put((String) key, (NoteList) value);
+        return hashmap.put(key, value);
     }
 
     public NoteList remove(Object key) {
         return hashmap.remove(key);
     }
 
-    public void putAll(Map m) {
+    public void storeAll(Map<String, NoteList> m) {
         hashmap.putAll(m);
     }
 
@@ -121,13 +122,19 @@ public class FileMap implements Serializable, Map<String,NoteList> {
         return hashmap.keySet();
     }
 
-    public Collection values() {
+    public Collection<NoteList> values() {
         return hashmap.values();
     }
 
-    public Set entrySet() {
+    @SuppressWarnings("unchecked")
+	public Set entrySet() {
         return hashmap.entrySet();
     }
 
+	@Override
+	public void putAll(Map<? extends String, ? extends NoteList> m) {
+		// TODO Auto-generated method stub
+		
+	}
  
 }
