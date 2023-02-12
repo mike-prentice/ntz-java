@@ -1,6 +1,6 @@
 package rocks.zipcode;
 
-import java.util.Scanner;
+import java.util.List;
 
 /**
  * ntz main command.
@@ -33,15 +33,6 @@ public final class Notez {
 
         ntzEngine.loadDatabase();
 
-        /*
-         * You will spend a lot of time right here.
-         *
-         * instead of loadDemoEntries, you will implement a series
-         * of method calls that manipulate the Notez engine.
-         * See the first one:
-         */
-        //ntzEngine.loadDemoEntries();
-
         ntzEngine.saveDatabase();
 
         if (argv.length == 0) { // there are no command line arguments
@@ -49,34 +40,21 @@ public final class Notez {
             ntzEngine.printResults();
         } else {
             if (argv[0].equals("-r")) {
-                // Scanner scanner = new Scanner(System.in); // Create a Scanner object
-                // System.out.println("Enter a catagory for your note");
-                // String catagory = scanner.nextLine(); // Read user input
-                // System.out.println("Enter Note text... ");
-                // String note = scanner.nextLine();
-
                 ntzEngine.addToCategory("General", argv[1]);
-                //scanner.close();
             } else if (argv[0].equals("-c")) {
                 ntzEngine.addToCategory(argv[1], argv[2]);
             } else if (argv[0].equals("-f")) {
-                ntzEngine.removeNote(argv[1]);
+                ntzEngine.removeNote(argv[1], argv[2]);
             } else if (argv[0].equals("-fa")) {
                 ntzEngine.deleteAllNotes();
-            }
-
-
-            else if (argv[0].equals("ntz")) {
+            }else if (argv[0].equals("-e")) {
+            	ntzEngine.editNote(argv[1], argv[2], argv[3]);
+            }else if (argv[0].equals("ntz")) {
                 ntzEngine.printResults();
+            } else if(argv[0].equals("-d")) {
+            	ntzEngine.displayCategory(argv[1]);
             }
-            // this should give you an idea about how to TEST the Notez engine
-            // without having to spend lots of time messing with command line arguments.
         }
-
-        /*
-         * what other method calls do you need here to implement the other commands??
-         */
-
     }
 
     private void deleteAllNotes() {
@@ -84,8 +62,14 @@ public final class Notez {
         saveDatabase();
     }
 
-    private void removeNote(String string) {
-        filemap.remove(string);
+    private void removeNote(String category, String note) {
+        filemap.get(category).remove(Integer.parseInt(note) - 1);
+        saveDatabase();
+    }
+    
+    private void editNote(String category, String note, String newNote) {
+        filemap.get(category).set(Integer.parseInt(note), newNote);
+        saveDatabase();
     }
 
     private void addToCategory(String category, String note) {
@@ -109,15 +93,15 @@ public final class Notez {
     public void printResults() {
         System.out.println(this.filemap.toString());
     }
-
-    public void loadDemoEntries() {
-        filemap.put("General", new NoteList("The Very first Note"));
-        filemap.put("note2", new NoteList("A secret second note"));
-        filemap.put("category3", new NoteList("Did you buy bread AND eggs?"));
-        filemap.put("anotherNote", new NoteList("Hello from ZipCode!"));
+    
+    private void displayCategory(String category) {
+    	int index = 1;
+    	List<String> categoryNotes = filemap.get(category);
+    	for(String s : categoryNotes) {
+    		System.out.println(index + ": " + s.toString());
+    		index++;
+    	}
     }
-    /*
-     * Put all your additional methods that implement commands like forget here...
-     */
+
 
 }
